@@ -10,11 +10,11 @@ text_offset_y = 15
 font = cv2.FONT_HERSHEY_SIMPLEX
 font_scale = 0.6
 font_thickness = 2
-bg_color = (0, 0, 255)  # Background color (black in this case)
+bg_color = (0, 0, 255) 
 text_color = (0, 0,  0)
 cap = cv2.VideoCapture(0)
 
-
+#####################################################################################################
 def calculate_angle(a, b, c):
     a = np.array(a)  # First
     b = np.array(b)  # Mid
@@ -27,31 +27,14 @@ def calculate_angle(a, b, c):
         angle = 360 - angle
 
     return angle
-
-with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
-    while cap.isOpened():
-        ret, frame = cap.read()
-        frame = cv2.resize(frame, (1300, 700))
-        cv2.putText(frame, "press 1 for Dumbbell Bicep Curl", (450, 25), font, font_scale, text_color, font_thickness,
-                        cv2.LINE_AA)
-        cv2.putText(frame, "or q to exit", (450, 60), font, font_scale, text_color, font_thickness, cv2.LINE_AA)
-        cv2.imshow('Mediapipe Feed', frame)
-        key = cv2.waitKey(10)
-        if key & 0xFF == ord('1'):
-            cv2.destroyAllWindows()
-            side = -1
-            text = 'Wait'
-            stage = 'down'
-            bg_color=(0,0,255)
-            while cap.isOpened():
-                ret,frame = cap.read()
-                frame = cv2.resize(frame, (1300, 700))
-                image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+#####################################################################################################
+def Dumbbell_Bicep_Curl(frame,image,pose,bg_color,side,stage,text):
+                
                 image.flags.writeable = False
-
                 results = pose.process(image)
-
                 image.flags.writeable = True
+
+
                 image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
                 # Get text size
@@ -98,7 +81,14 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
                                 tuple(np.multiply([relbow[0] - .05, relbow[1]], [1300, 700]).astype(int)),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA
                                 )
-                    if side == 1:
+                    if side == -1:
+                        key=cv2.waitKey(10)
+                        if key & 0xFF == ord('1'):
+                            side = 1
+                        if key & 0xFF == ord('2'):
+                            side = 2
+                    elif side == 1:
+                        key=cv2.waitKey(10)
                         if angle > 160:
                             stage = "down"
                             text = "Wait"
@@ -107,7 +97,8 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
                             stage = "up"
                             bg_color = (0, 255, 0)
                             text = "Correct"
-                    if side == 2:
+                    elif side == 2:
+                        key=cv2.waitKey(10)
                         if angle2 > 160:
                             stage = "down"
                             text = "Wait"
@@ -124,15 +115,34 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
                 mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
                                             mp_drawing.DrawingSpec(color=(245, 117, 66), thickness=2, circle_radius=2),
                                             mp_drawing.DrawingSpec(color=(245, 66, 230), thickness=2, circle_radius=2))
-                cv2.imshow("Dumbbell Bicep Curl", image)
-                key = cv2.waitKey(10)
+                return(image,bg_color,side,stage,text,key)
+#####################################################################################################
+
+with mp_pose.Pose(min_detection_confidence=0.7,min_tracking_confidence=0.7) as pose:
+    while cap.isOpened():
+        ret, frame = cap.read()
+        frame = cv2.resize(frame, (1300, 700))
+        cv2.putText(frame, "press 1 for Dumbbell Bicep Curl", (450, 25), font, font_scale, text_color, font_thickness,
+                        cv2.LINE_AA)
+        cv2.putText(frame, "or q to exit", (450, 60), font, font_scale, text_color, font_thickness, cv2.LINE_AA)
+        cv2.imshow('Mediapipe Feed', frame)
+        key = cv2.waitKey(10)
+        if key & 0xFF == ord('1'):
+            cv2.destroyAllWindows()
+            side = -1
+            text = 'Wait'
+            stage = 'down'
+            bg_color=(0,0,255)
+            while cap.isOpened():
+                ret,frame = cap.read()
+                frame = cv2.resize(frame, (1300, 700))
+                image= cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                
+                (image,bg_color,side,stage,text,key)=Dumbbell_Bicep_Curl(frame,image,pose,bg_color,side,stage,text)
                 if key & 0xFF == ord('q'):
-                    break
-                if side == -1:
-                    if key & 0xFF == ord('1'):
-                        side = 1
-                    if key & 0xFF == ord('2'):
-                        side = 2
+                    break  
+                cv2.imshow("Dumbbell Bicep Curl", image)
+            
         elif key & 0xFF == ord('q'):
             break
 
