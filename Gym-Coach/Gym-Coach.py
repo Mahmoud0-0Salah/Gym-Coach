@@ -28,22 +28,21 @@ def calculate_angle(a, b, c):
 
     return angle
 
-
-while cap.isOpened():
-    ret, frame = cap.read()
-    frame = cv2.resize(frame, (1300, 700))
-    cv2.putText(frame, "press 1 for Dumbbell Bicep Curl", (450, 25), font, font_scale, text_color, font_thickness,
-                    cv2.LINE_AA)
-    cv2.putText(frame, "or q to exit", (450, 60), font, font_scale, text_color, font_thickness, cv2.LINE_AA)
-    cv2.imshow('Mediapipe Feed', frame)
-    key = cv2.waitKey(10)
-    if key & 0xFF == ord('1'):
-        cv2.destroyAllWindows()
-        side = -1
-        text = 'Wait'
-        stage = 'down'
-        bg_color=(0,0,255)
-        with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
+with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
+    while cap.isOpened():
+        ret, frame = cap.read()
+        frame = cv2.resize(frame, (1300, 700))
+        cv2.putText(frame, "press 1 for Dumbbell Bicep Curl", (450, 25), font, font_scale, text_color, font_thickness,
+                        cv2.LINE_AA)
+        cv2.putText(frame, "or q to exit", (450, 60), font, font_scale, text_color, font_thickness, cv2.LINE_AA)
+        cv2.imshow('Mediapipe Feed', frame)
+        key = cv2.waitKey(10)
+        if key & 0xFF == ord('1'):
+            cv2.destroyAllWindows()
+            side = -1
+            text = 'Wait'
+            stage = 'down'
+            bg_color=(0,0,255)
             while cap.isOpened():
                 ret,frame = cap.read()
                 frame = cv2.resize(frame, (1300, 700))
@@ -70,16 +69,16 @@ while cap.isOpened():
                     shoulder = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,
                                 landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
                     elbow = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x,
-                             landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
+                                landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
                     wrist = [landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x,
-                             landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y]
+                                landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y]
 
                     rshoulder = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,
-                                 landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
+                                    landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
                     relbow = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,
-                              landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
+                                landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
                     rwrist = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x,
-                              landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
+                                landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
                     # Calculate angle
                     angle = round(calculate_angle(shoulder, elbow, wrist))
                     angle2 = round(calculate_angle(rshoulder, relbow, rwrist))
@@ -123,8 +122,8 @@ while cap.isOpened():
                 except:
                     pass
                 mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
-                                          mp_drawing.DrawingSpec(color=(245, 117, 66), thickness=2, circle_radius=2),
-                                          mp_drawing.DrawingSpec(color=(245, 66, 230), thickness=2, circle_radius=2))
+                                            mp_drawing.DrawingSpec(color=(245, 117, 66), thickness=2, circle_radius=2),
+                                            mp_drawing.DrawingSpec(color=(245, 66, 230), thickness=2, circle_radius=2))
                 cv2.imshow("Dumbbell Bicep Curl", image)
                 key = cv2.waitKey(10)
                 if key & 0xFF == ord('q'):
@@ -134,8 +133,8 @@ while cap.isOpened():
                         side = 1
                     if key & 0xFF == ord('2'):
                         side = 2
-    elif key & 0xFF == ord('q'):
-        break
+        elif key & 0xFF == ord('q'):
+            break
 
 
 cap.release()
