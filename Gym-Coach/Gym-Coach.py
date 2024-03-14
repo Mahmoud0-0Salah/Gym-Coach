@@ -11,7 +11,7 @@ font = cv2.FONT_HERSHEY_SIMPLEX
 font_scale = 0.6
 font_thickness = 2
 bg_color = (0, 0, 255)  # Background color (black in this case)
-text_color = (0, 0, 0)
+text_color = (0, 0,  0)
 cap = cv2.VideoCapture(0)
 
 
