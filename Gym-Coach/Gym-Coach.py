@@ -45,7 +45,7 @@ def Dumbbell_Bicep_Curl(frame,image,pose,bg_color,side,stage,text):
 
                 # Draw filled rectangle
                 cv2.rectangle(image, rectangle_coords[0], rectangle_coords[1], bg_color, cv2.FILLED)
-
+                key=-1
                 try:
                     landmarks = results.pose_landmarks.landmark
                     # Get coordinates
@@ -118,7 +118,7 @@ def Dumbbell_Bicep_Curl(frame,image,pose,bg_color,side,stage,text):
                 return(image,bg_color,side,stage,text,key)
 #####################################################################################################
 
-with mp_pose.Pose(min_detection_confidence=0.7,min_tracking_confidence=0.7) as pose:
+with mp_pose.Pose(min_detection_confidence=0.5,min_tracking_confidence=0.5) as pose:
     while cap.isOpened():
         ret, frame = cap.read()
         frame = cv2.resize(frame, (1300, 700))
