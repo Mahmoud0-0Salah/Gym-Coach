@@ -28,7 +28,7 @@ def calculate_angle(a, b, c):
 
     return angle
 #####################################################################################################
-def Dumbbell_Bicep_Curl(frame,image,pose,bg_color,side,stage,text):
+def Dumbbell_Bicep_Curl(image,pose,bg_color,side,stage,text,key):
                 
                 image.flags.writeable = False
                 results = pose.process(image)
@@ -37,15 +37,12 @@ def Dumbbell_Bicep_Curl(frame,image,pose,bg_color,side,stage,text):
 
                 image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
-                # Get text size
-                (text_width, text_height), baseline = cv2.getTextSize(text, font, font_scale, font_thickness)
 
                 # Define rectangle coordinates
                 rectangle_coords = ((text_offset_x, text_offset_y + 30), (text_offset_x + 100, text_offset_y - 60))
 
                 # Draw filled rectangle
                 cv2.rectangle(image, rectangle_coords[0], rectangle_coords[1], bg_color, cv2.FILLED)
-                key=-1
                 try:
                     landmarks = results.pose_landmarks.landmark
                     # Get coordinates
@@ -67,7 +64,7 @@ def Dumbbell_Bicep_Curl(frame,image,pose,bg_color,side,stage,text):
                     angle2 = round(calculate_angle(rshoulder, relbow, rwrist))
 
                     if side == -1:
-                        cv2.putText(image, "press 1 for left hand or 2 to right hand or q to exit", (500, 25), font, font_scale,
+                        cv2.putText(image, "press l for left hand or r to right hand or q to exit", (500, 25), font, font_scale,
                                     text_color, font_thickness, cv2.LINE_AA)
                     else:
                         cv2.putText(image, "q to exit", (500, 25), font, font_scale,
@@ -82,13 +79,11 @@ def Dumbbell_Bicep_Curl(frame,image,pose,bg_color,side,stage,text):
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA
                                 )
                     if side == -1:
-                        key=cv2.waitKey(10)
-                        if key & 0xFF == ord('1'):
+                        if key & 0xFF == ord('l'):
                             side = 1
-                        if key & 0xFF == ord('2'):
+                        if key & 0xFF == ord('r'):
                             side = 2
                     elif side == 1:
-                        key=cv2.waitKey(10)
                         if angle > 160:
                             stage = "down"
                             text = "Wait"
@@ -98,7 +93,6 @@ def Dumbbell_Bicep_Curl(frame,image,pose,bg_color,side,stage,text):
                             bg_color = (0, 255, 0)
                             text = "Correct"
                     elif side == 2:
-                        key=cv2.waitKey(10)
                         if angle2 > 160:
                             stage = "down"
                             text = "Wait"
@@ -115,7 +109,7 @@ def Dumbbell_Bicep_Curl(frame,image,pose,bg_color,side,stage,text):
                 mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
                                             mp_drawing.DrawingSpec(color=(245, 117, 66), thickness=2, circle_radius=2),
                                             mp_drawing.DrawingSpec(color=(245, 66, 230), thickness=2, circle_radius=2))
-                return(image,bg_color,side,stage,text,key)
+                return(image,bg_color,side,stage,text)
 #####################################################################################################
 def dumbbell_lateral_raise(results, image):
     dlr_status = 'Observing'
@@ -201,15 +195,17 @@ with mp_pose.Pose(min_detection_confidence=0.5,min_tracking_confidence=0.5) as p
             text = 'Wait'
             stage = 'down'
             bg_color=(0,0,255)
+            key=-1
             while cap.isOpened():
                 ret,frame = cap.read()
                 frame = cv2.resize(frame, (1300, 700))
                 image= cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 
-                (image,bg_color,side,stage,text,key)=Dumbbell_Bicep_Curl(frame,image,pose,bg_color,side,stage,text)
+                (image,bg_color,side,stage,text)=Dumbbell_Bicep_Curl(image,pose,bg_color,side,stage,text,key)
+                cv2.imshow("Dumbbell Bicep Curl", image)
+                key=cv2.waitKey(10)
                 if key & 0xFF == ord('q'):
                     break  
-                cv2.imshow("Dumbbell Bicep Curl", image)
 
         elif key & 0xFF == ord('2'):
             cv2.destroyAllWindows()
