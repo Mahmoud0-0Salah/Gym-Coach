@@ -117,14 +117,82 @@ def Dumbbell_Bicep_Curl(frame,image,pose,bg_color,side,stage,text):
                                             mp_drawing.DrawingSpec(color=(245, 66, 230), thickness=2, circle_radius=2))
                 return(image,bg_color,side,stage,text,key)
 #####################################################################################################
+def dumbbell_lateral_raise(results, image):
+    dlr_status = 'Observing'
+    text_color = (0, 0, 0)
+    try:
+        landmarks = results.pose_landmarks.landmark
+        
+        # Get coordinates
+        # left side
+        l_shoulder = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x,landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
+        l_elbow = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x,landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
+        l_wrist = [landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].x,landmarks[mp_pose.PoseLandmark.LEFT_WRIST.value].y]
+        l_hip = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x,landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
+        # right side
+        r_shoulder = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
+        r_elbow = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
+        r_wrist = [landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_WRIST.value].y]
+        r_hip = [landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x,landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y]
+        
+        # Calculate angle
+        # left
+        l_angle1 = round(calculate_angle(l_shoulder, l_elbow, l_wrist))
+        l_angle2 = round(calculate_angle(l_hip, l_shoulder, l_elbow))
+        # right
+        r_angle1 = round(calculate_angle(r_shoulder, r_elbow, r_wrist))
+        r_angle2 = round(calculate_angle(r_hip, r_shoulder, r_elbow))
+        
+        # Visualize angle
+        cv2.putText(image, str(l_angle1), 
+                        tuple(np.multiply(l_elbow, [640, 480]).astype(int)), 
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA
+        )
+        cv2.putText(image, str(l_angle2), 
+                        tuple(np.multiply(l_shoulder, [640, 480]).astype(int)), 
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA
+        )
+        cv2.putText(image, str(r_angle1), 
+                        tuple(np.multiply(r_elbow, [640, 480]).astype(int)), 
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA
+        )
+        cv2.putText(image, str(r_angle2), 
+                        tuple(np.multiply(r_shoulder, [640, 480]).astype(int)), 
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA
+        )
+        if (l_angle1 >= 150 and l_angle2 >= 85
+            and r_angle1 >= 150 and r_angle2 >= 85):
+            dlr_status = "Correct"     
+            text_color = (0, 200, 0)
+        elif (abs(l_angle1 - r_angle1)  >= 40 
+              or abs(l_angle2 - r_angle2) >= 40):
+            dlr_status = "InCorrect"     
+            text_color = (0, 0, 200)
+        
+    except:
+        pass
+    
+    # Rep data
+    cv2.rectangle(image, (0,0), (125,33), (245,117,16), -1)
+    cv2.putText(image, dlr_status, (text_offset_x + 25, text_offset_y + 10), font, font_scale, text_color,
+                                font_thickness, cv2.LINE_AA)
+    mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
+                                mp_drawing.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=2), 
+                                mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2) 
+    )
+    cv2.putText(image, "q to exit", (250, 15), font, font_scale, (0, 0, 0), font_thickness, cv2.LINE_AA)
+    return image
 
+###########################################################################################
 with mp_pose.Pose(min_detection_confidence=0.5,min_tracking_confidence=0.5) as pose:
     while cap.isOpened():
         ret, frame = cap.read()
         frame = cv2.resize(frame, (1300, 700))
         cv2.putText(frame, "press 1 for Dumbbell Bicep Curl", (450, 25), font, font_scale, text_color, font_thickness,
                         cv2.LINE_AA)
-        cv2.putText(frame, "or q to exit", (450, 60), font, font_scale, text_color, font_thickness, cv2.LINE_AA)
+        cv2.putText(frame, "press 2 for Dumbbell lateral raise", (450, 50), font, font_scale, text_color, font_thickness,
+                        cv2.LINE_AA)
+        cv2.putText(frame, "or q to exit", (450, 75), font, font_scale, text_color, font_thickness, cv2.LINE_AA)
         cv2.imshow('Mediapipe Feed', frame)
         key = cv2.waitKey(10)
         if key & 0xFF == ord('1'):
@@ -142,6 +210,24 @@ with mp_pose.Pose(min_detection_confidence=0.5,min_tracking_confidence=0.5) as p
                 if key & 0xFF == ord('q'):
                     break  
                 cv2.imshow("Dumbbell Bicep Curl", image)
+
+        elif key & 0xFF == ord('2'):
+            cv2.destroyAllWindows()
+            bg_color=(0,0,255)
+            while cap.isOpened():
+                ret,frame = cap.read()
+                image= cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                image.flags.writeable = False
+
+                results = pose.process(image)
+                
+                image.flags.writeable = True
+                image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
+                image = dumbbell_lateral_raise(results, image)
+                cv2.imshow("Dumbbell lateral raise", image)
+                if cv2.waitKey(10) & 0xFF == ord('q'):
+                    break  
             
         elif key & 0xFF == ord('q'):
             break
