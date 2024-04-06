@@ -276,6 +276,7 @@ with mp_pose.Pose(min_detection_confidence=0.5,min_tracking_confidence=0.5) as p
                 cv2.imshow("Dumbbell Bicep Curl", image)
                 key=cv2.waitKey(10)
                 if key & 0xFF == ord('q'):
+                    cv2.destroyAllWindows()
                     break  
 
         elif key & 0xFF == ord('2'):
@@ -295,6 +296,7 @@ with mp_pose.Pose(min_detection_confidence=0.5,min_tracking_confidence=0.5) as p
                 image = dumbbell_lateral_raise(results, image)
                 cv2.imshow("Dumbbell lateral raise", image)
                 if cv2.waitKey(10) & 0xFF == ord('q'):
+                    cv2.destroyAllWindows()
                     break  
         elif key & 0xFF == ord('3'):
              cv2.destroyAllWindows()
@@ -311,8 +313,9 @@ with mp_pose.Pose(min_detection_confidence=0.5,min_tracking_confidence=0.5) as p
                 image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
                 image = Dumbbell_push_press(results, image)
-                cv2.imshow("press 3 forDumbbell push press", image)
+                cv2.imshow("Dumbbell push press", image)
                 if cv2.waitKey(10) & 0xFF == ord('q'):
+                    cv2.destroyAllWindows()
                     break 
             
         elif key & 0xFF == ord('q'):
