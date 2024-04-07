@@ -2,7 +2,6 @@ import cv2
 import mediapipe as mp
 import numpy as np
 
-mp_drawing = mp.solutions.drawing_utils
 mp_pose = mp.solutions.pose
 
 text_offset_x = 0
@@ -106,9 +105,7 @@ def Dumbbell_Bicep_Curl(image,pose,bg_color,side,stage,text,key):
                                 font_thickness, cv2.LINE_AA)
                 except:
                     pass
-                mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
-                                            mp_drawing.DrawingSpec(color=(245, 117, 66), thickness=2, circle_radius=2),
-                                            mp_drawing.DrawingSpec(color=(245, 66, 230), thickness=2, circle_radius=2))
+                
                 return(image,bg_color,side,stage,text)
 #####################################################################################################
 def dumbbell_lateral_raise(results, image):
@@ -170,10 +167,6 @@ def dumbbell_lateral_raise(results, image):
     cv2.rectangle(image, (0,0), (125,33), (245,117,16), -1)
     cv2.putText(image, dlr_status, (text_offset_x + 25, text_offset_y + 10), font, font_scale, text_color,
                                 font_thickness, cv2.LINE_AA)
-    mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
-                                mp_drawing.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=2), 
-                                mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2) 
-    )
     cv2.putText(image, "q to exit", (250, 15), font, font_scale, (0, 0, 0), font_thickness, cv2.LINE_AA)
     return image
 def Dumbbell_push_press(results,image):
@@ -239,10 +232,7 @@ def Dumbbell_push_press(results,image):
     cv2.rectangle(image, (0,0), (125,33), (245,117,16), -1)
     cv2.putText(image, status, (text_offset_x + 25, text_offset_y + 10), font, font_scale, text_color,
                                 font_thickness, cv2.LINE_AA)
-    mp_drawing.draw_landmarks(image,results.pose_landmarks,mp_pose.POSE_CONNECTIONS,
-                           mp_drawing.DrawingSpec(color=(245,177,66), thickness=2, circle_radius=2),  
-                           mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2) 
-                             )##to draw landmarks
+
     cv2.putText(image, "q to exit", (250, 15), font, font_scale, (0, 0, 0), font_thickness, cv2.LINE_AA)
     return image
 
