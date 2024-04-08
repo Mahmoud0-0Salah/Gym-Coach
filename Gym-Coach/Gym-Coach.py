@@ -136,19 +136,19 @@ def dumbbell_lateral_raise(results, image):
         
         # Visualize angle
         cv2.putText(image, str(l_angle1), 
-                        tuple(np.multiply(l_elbow, [640, 480]).astype(int)), 
+                        tuple(np.multiply(l_elbow, (1300, 700)).astype(int)), 
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA
         )
         cv2.putText(image, str(l_angle2), 
-                        tuple(np.multiply(l_shoulder, [640, 480]).astype(int)), 
+                        tuple(np.multiply(l_shoulder, (1300, 700)).astype(int)), 
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA
         )
         cv2.putText(image, str(r_angle1), 
-                        tuple(np.multiply(r_elbow, [640, 480]).astype(int)), 
+                        tuple(np.multiply(r_elbow, (1300, 700)).astype(int)), 
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA
         )
         cv2.putText(image, str(r_angle2), 
-                        tuple(np.multiply(r_shoulder, [640, 480]).astype(int)), 
+                        tuple(np.multiply(r_shoulder, (1300, 700)).astype(int)), 
                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2, cv2.LINE_AA
         )
         if (l_angle1 >= 150 and l_angle2 >= 85
@@ -274,7 +274,7 @@ with mp_pose.Pose(min_detection_confidence=0.5,min_tracking_confidence=0.5) as p
             bg_color=(0,0,255)
             while cap.isOpened():
                 ret,frame = cap.read()
-                frame = cv2.resize(frame, (1000, 700))
+                frame = cv2.resize(frame, (1300, 700))
                 image= cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 image.flags.writeable = False
 
