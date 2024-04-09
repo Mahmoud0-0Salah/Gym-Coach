@@ -9,9 +9,17 @@ requirements:
 #### Clone the repo
 
     git clone https://github.com/Mahmoud0-0Salah/Gym-Coach.git
-#### navigate to the repo folder
 
-    cd Gym-Coach
 #### install dependencies
 
     pip install -r requirements.txt
+
+#### navigate to the code folder
+
+    cd Gym-Coach
+
+#### run the program
+
+    python Gym-Coach.py
+
+    
